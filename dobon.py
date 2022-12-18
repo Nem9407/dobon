@@ -164,7 +164,6 @@ while True:
                     #ここに出せるカードかを判定する処理を記述する
                     to_play(you, action)
                     can_dobon = 'cpu'
-                    draw_count += 1
 
 
             #カードを出す場合
