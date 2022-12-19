@@ -5,9 +5,14 @@ card_mark = ['♠', '♣', '♥', '♦']
 deck = [mark + str(num) for num in range(1,14) for mark in card_mark]
 
 #変数の定義
+game_count = 1
 turn_count = 0
 draw_count = 0
 dobon_num = 0
+your_point = 30
+cpu_point  = 30
+game_rate = 1
+blind_bonus = ''
 draw_cards_list = [i+j for i in card_mark for j in ['1', '8', '10']]
 eleven_choice = 'free'
 win_player = ''
@@ -76,6 +81,7 @@ def pass_or_play(player, draw_deck):
     if turn == 0:
         print('場のカード：', table[-1])
         print('あなたの手札：', player)
+        print('CPUの手札：', computer)
         print('カードを場に出すかパスしてください')
         print('カードを出す場合「マークと数字　例：♠1」、パスをする場合「pass」と入力してください')
         action = input()
@@ -90,93 +96,137 @@ def pass_or_play(player, draw_deck):
             draw_check = False
         else: print('パスしました')
 
-#プレイヤー、コンピューター、場にカードを配る
-you = draw(deck, 3)
-computer = draw(deck, 3)
-table = draw(deck, 1)
-
-players = [you, computer]
 
 
-#ゲームの実装
-while True:
-    turn = turn_count % 2
+#ドボンの実装
+while your_point > 0 and cpu_point > 0:
+    #変数の初期化
+    deck = [mark + str(num) for num in range(1,14) for mark in card_mark]
+    random.shuffle(deck)
+    turn_count = 0
+    draw_count = 0
+    dobon_num = 0
+    game_rate = 1
+    blind_bonus = ''
+    eleven_choice = 'free'
+    win_player = ''
+    can_dobon = 'free'
 
-    #ドボンできるかどうかを判断
-    card_sum = 0
-    for card in players[turn]: card_sum += int(card[1:])
-    if table[-1][1:] == str(card_sum):
+    #プレイヤー、コンピューター、場、裏ドラにカードを配る
+    you = draw(deck, 3)
+    computer = draw(deck, 3)
+    table = draw(deck, 1)
+    blind_bonus = draw(deck, 1)
+    players = [you, computer]
 
-        #プレイヤー側
-        if turn == 0:
-            print('ドボンできます！ドボンしますか？')
-            print('「Yes」または「No」を入力してください ')
-            you_ans = input()
-            print('---------------------')
-            if you_ans == 'Yes':
-                win_player = 'you'
+    print('～～～', game_count, 'ゲーム目～～～')
+
+    #1ゲーム分の処理
+    while True:
+        turn = turn_count % 2
+
+        #ドボンできるかどうかを判断
+        card_sum = 0
+        for card in players[turn]: card_sum += int(card[1:])
+        if table[-1][1:] == str(card_sum):
+
+            #プレイヤー側
+            if turn == 0:
+                print('ドボンできます！ドボンしますか？')
+                print('「Yes」または「No」を入力してください ')
+                you_ans = input()
+                print('---------------------')
+                if you_ans == 'Yes':
+                    win_player = 'you'
+                    dobon_num = card_sum
+                    break
+            
+            #CPU側
+            else:
+                win_player = 'CPU'
                 dobon_num = card_sum
                 break
         
-        #CPU側
-        elif turn == 1:
-            win_player = 'CPU'
-            dobon_num = card_sum
-            break
-    
-    #プレイヤー側の処理
-    if turn == 0:
+        #プレイヤー側の処理
+        if turn == 0:
 
-        #現在の状況を出力
-        print('-----あなたのターン-----')
-        print('山札の残り枚数：', len(deck), '枚')
-        print('場のカード：', table[-1])
-        print('あなたの手札：', you)
-        #print('CPUの手札：', computer)
-        print('CPUの手札の枚数：', len(computer), '枚')
-        print('---------------------')
-
-
-        #状況ごとに行動を選択
-
-        #場のカードがドローカード
-        if table[-1] in draw_cards_list and turn_count != 0 and draw_count != 0:
-            print('場にあるカードはドローカードです。ドローカードを出すか山札から', draw_count, '枚引いてください')
-            print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
-            action = input()
+            #現在の状況を出力
+            print('-----あなたのターン-----')
+            print('山札の残り枚数：', len(deck), '枚')
+            print('場のカード：', table[-1])
+            print('あなたの手札：', you)
+            print('CPUの手札：', computer)
+            print('CPUの手札の枚数：', len(computer), '枚')
             print('---------------------')
 
-            #ドローする場合
-            if action == 'draw':
-                draw_cards = draw(deck, draw_count)
-                you.extend(draw_cards)
-                print('カードを', draw_count, '枚ドローしました')
-                draw_count = 0
 
-                print('場のカード：', table[-1])
-                print('あなたの手札：', you)
-                print('カードを出すか山札からもう1枚カードを引いてください')
+            #状況ごとに行動を選択
+
+            #場のカードがドローカード
+            if table[-1] in draw_cards_list and turn_count != 0 and draw_count != 0:
+                print('場にあるカードはドローカードです。ドローカードを出すか山札から', draw_count, '枚引いてください')
                 print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
                 action = input()
                 print('---------------------')
-                if action == 'draw': pass_or_play(you, deck)
-                else: 
-                    #ここに出せるカードかを判定する処理を記述する
+
+                #ドローする場合
+                if action == 'draw':
+                    draw_cards = draw(deck, draw_count)
+                    you.extend(draw_cards)
+                    print('カードを', draw_count, '枚ドローしました')
+                    draw_count = 0
+
+                    print('場のカード：', table[-1])
+                    print('あなたの手札：', you)
+                    print('カードを出すか山札からもう1枚カードを引いてください')
+                    print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
+                    action = input()
+                    print('---------------------')
+                    if action == 'draw': pass_or_play(you, deck)
+                    else: 
+                        #ここに出せるカードかを判定する処理を記述する
+                        to_play(you, action)
+                        can_dobon = 'cpu'
+
+
+                #カードを出す場合
+                else:
+                    #ここに1,8,10だけを通す処理を記述する
                     to_play(you, action)
                     can_dobon = 'cpu'
+            
 
+            #場のカードが11
+            elif table[-1][1:] == '11':
+                if eleven_choice == 'free':
+                    print('好きなカードを出すか、カードを1枚引いてください')
+                    print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
+                    action = input()
+                    print('---------------------')
 
-            #カードを出す場合
+                    #ドローする場合
+                    if action == 'draw': pass_or_play(you, deck)
+
+                    #カードを出す場合
+                    else: to_play(you, action)
+                else:
+                    print('場にあるカードは11です。マークが', eleven_choice, 'のカードを出すか、カードを1枚引いてください')
+                    print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
+                    action = input()
+                    print('---------------------')
+                    
+                    #ドローする場合
+                    if action == 'draw': pass_or_play(you, deck)
+
+                    #カードを出す場合
+                    else: 
+                        #ここに指定のマークだけを通す処理を記述する
+                        to_play(you, action)
+            
+
+            #場のカードがそれ以外
             else:
-                #ここに1,8,10だけを通す処理を記述する
-                to_play(you, action)
-                can_dobon = 'cpu'
-        
-
-        #場のカードが11
-        elif table[-1][1:] == '11':
-            if eleven_choice == 'free':
-                print('好きなカードを出すか、カードを1枚引いてください')
+                print('カードを出すか、カードを1枚引いてください')
                 print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
                 action = input()
                 print('---------------------')
@@ -185,113 +235,145 @@ while True:
                 if action == 'draw': pass_or_play(you, deck)
 
                 #カードを出す場合
-                else: to_play(you, action)
-            else:
-                print('場にあるカードは11です。マークが', eleven_choice, 'のカードを出すか、カードを1枚引いてください')
-                print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
-                action = input()
-                print('---------------------')
-                
-                #ドローする場合
-                if action == 'draw': pass_or_play(you, deck)
-
-                #カードを出す場合
-                else: 
-                    #ここに指定のマークだけを通す処理を記述する
+                else:
+                    #ここにカードを出せるかどうかの判定を記述
                     to_play(you, action)
-        
 
-        #場のカードがそれ以外
+
+        #CPU側の処理
         else:
-            print('カードを出すか、カードを1枚引いてください')
-            print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
-            action = input()
-            print('---------------------')
+            print('-----CPUのターン-----')
+            
+            #状況ごとに行動を選択
+            draw_check = True
 
-            #ドローする場合
-            if action == 'draw': pass_or_play(you, deck)
+            #場のカードがドローカード
+            if table[-1] in draw_cards_list and draw_count != 0:
 
-            #カードを出す場合
-            else:
-                #ここにカードを出せるかどうかの判定を記述
-                to_play(you, action)
-
-
-    #CPU側の処理
-    else:
-        print('-----CPUのターン-----')
-        
-        #状況ごとに行動を選択
-        draw_check = True
-
-        #場のカードがドローカード
-        if table[-1] in draw_cards_list and draw_count != 0:
-
-            #カードを出す場合
-            for card in computer:
-                if card in draw_cards_list:
-                    to_play(computer, card)
-                    draw_check = False
-                    break
-
-            #ドローする場合
-            if draw_check:
-                draw_cards = draw(deck, draw_count)
-                computer.extend(draw_cards)
-                print('カードを', draw_count, '枚ドローしました')
-                draw_count = 0
-
+                #カードを出す場合
                 for card in computer:
-                    if card in draw_cards_list or card[1:] == '11' or card[0] == table[-1][0]:
+                    if card in draw_cards_list:
                         to_play(computer, card)
                         draw_check = False
                         break
-                if draw_check: pass_or_play(computer, deck)
 
-        
-        #場のカードが11
-        elif table[-1][1:] == '11':
-            for card in computer:
-                #カードを出す
-                if card in draw_cards_list or card[1:] == '11' or card[0] == eleven_choice:
-                    to_play(computer, card)
-                    draw_check = False
-                    break
-                
-            #カードを出していない場合にドローする
-            if draw_check: pass_or_play(computer, deck)
-        
-        #場のカードがそれ以外
-        else:
-            for card in computer:
-                #出せたらカードを出す
-                if card[0] == table[-1][0] or card[1:] == table[-1][1:] or (card in draw_cards_list) or (card[1:] == '11'):
-                    to_play(computer, card)
-                    draw_check = False
-                    break
+                #ドローする場合
+                if draw_check:
+                    draw_cards = draw(deck, draw_count)
+                    computer.extend(draw_cards)
+                    print('カードを', draw_count, '枚ドローしました')
+                    draw_count = 0
+
+                    for card in computer:
+                        if card in draw_cards_list or card[1:] == '11' or card[0] == table[-1][0]:
+                            to_play(computer, card)
+                            draw_check = False
+                            break
+                    if draw_check: pass_or_play(computer, deck)
+
             
-            #カードを出していない場合にドローする
-            if draw_check: pass_or_play(computer, deck)
-    
-    #ターン数を増やす
-    turn_count += 1
+            #場のカードが11
+            elif table[-1][1:] == '11':
+                for card in computer:
+                    #カードを出す
+                    if card in draw_cards_list or card[1:] == '11' or card[0] == eleven_choice:
+                        to_play(computer, card)
+                        draw_check = False
+                        break
+                    
+                #カードを出していない場合にドローする
+                if draw_check: pass_or_play(computer, deck)
+            
+            #場のカードがそれ以外
+            else:
+                for card in computer:
+                    #出せたらカードを出す
+                    if card[0] == table[-1][0] or card[1:] == table[-1][1:] or (card in draw_cards_list) or (card[1:] == '11'):
+                        to_play(computer, card)
+                        draw_check = False
+                        break
+                
+                #カードを出していない場合にドローする
+                if draw_check: pass_or_play(computer, deck)
+        
+        #ターン数を増やす
+        turn_count += 1
 
 
-#手札が一致してるかどうかの判定
-hand_match = False
-hand = []
-for player in players:
-    card_sum = 0
-    for card in player: card_sum += int(card[1:])
-    hand.append(card_sum)
-if hand[0] == hand[1]: hand_match = True
+    #手札が一致してるかどうかの判定
+    hand_match = False
+    hand = []
+    for player in players:
+        card_sum = 0
+        for card in player: card_sum += int(card[1:])
+        hand.append(card_sum)
+    if hand[0] == hand[1]: hand_match = True
 
 
-#結果の出力
-if win_player == 'you':
-    if not hand_match: print('あなたの勝ちです！')
-    else: 'CPUにドボン返しされました、CPUの勝ちです！'
-elif win_player == 'CPU': 
-    if not hand_match: print('CPUがドボンしました、CPUの勝ちです！')
-    else: 'CPUにドボンされましたがドボン返ししました、あなたの勝ちです！'
-else: print('山札が無くなってしまいました')
+    #結果の出力
+
+    #プレイヤーがドボンした場合
+    if win_player == 'you':
+        #ドボン返しされない場合
+        if not hand_match: 
+            print('あなたの勝ちです！')
+
+            #裏ドラの確認
+            if blind_bonus[1:] == table[-1][1:]:
+                print('裏ドラが乗りました！点数が2倍になります！')
+                game_rate *= 2
+
+            print('点数は', hand[0]*game_rate, '点です！')
+            your_point += hand[0]*game_rate
+            cpu_point -= hand[0]*game_rate
+
+        #ドボン返しされた場合
+        else: 
+            print('CPUにドボン返しされました、CPUの勝ちです！点数は2倍になります！')
+            game_rate *= 2
+
+            #裏ドラの確認
+            if blind_bonus[1:] == table[-1][1:]:
+                print('裏ドラが乗りました！点数がさらに2倍になります！')
+                game_rate *= 2
+
+            print('点数は', hand[1]*game_rate, '点です！')
+            your_point -= hand[1]*game_rate
+            cpu_point += hand[1]*game_rate
+
+    #CPUがドボンした場合
+    elif win_player == 'CPU':
+        #ドボン返しできない場合 
+        if not hand_match: 
+            print('CPUがドボンしました、CPUの勝ちです！')
+
+            #裏ドラの確認
+            if blind_bonus[1:] == table[-1][1:]:
+                print('裏ドラが乗りました！点数が2倍になります！')
+                game_rate *= 2
+
+            print('点数は', hand[1]*game_rate, '点です！')
+            your_point -= hand[1]*game_rate
+            cpu_point += hand[1]*game_rate
+
+        #ドボン返しできる場合
+        else: 
+            print('CPUにドボンされましたがドボン返ししました、あなたの勝ちです！点数は2倍になります！')
+            game_rate *= 2
+
+            #裏ドラの確認
+            if blind_bonus[1:] == table[-1][1:]:
+                print('裏ドラが乗りました！点数がさらに2倍になります！')
+                game_rate *= 2
+                
+            print('点数は', hand[0]*game_rate, '点です！')
+            your_point += hand[0]*game_rate
+            cpu_point -= hand[0]*game_rate
+    else: print('山札が無くなってしまいました')
+
+    #持ち点の出力
+    print('あなたの持ち点：', your_point, '点')
+    print('CPUの持ち点：', cpu_point, '点\n')
+
+    #1ゲームが終了
+    game_count += 1
