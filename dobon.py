@@ -155,7 +155,6 @@ while your_point > 0 and cpu_point > 0:
             print('山札の残り枚数：', len(deck), '枚')
             print('場のカード：', table[-1])
             print('あなたの手札：', you)
-            print('CPUの手札：', computer)
             print('CPUの手札の枚数：', len(computer), '枚')
             print('---------------------')
 
@@ -371,9 +370,19 @@ while your_point > 0 and cpu_point > 0:
             cpu_point -= hand[0]*game_rate
     else: print('山札が無くなってしまいました')
 
-    #持ち点の出力
-    print('あなたの持ち点：', your_point, '点')
-    print('CPUの持ち点：', cpu_point, '点\n')
-
     #1ゲームが終了
     game_count += 1
+
+    #どちらかの持ち点が0以下かどうかを判定
+    if your_point <= 0 or cpu_point <= 0: break
+    else:
+        #持ち点の出力
+        print('---------------------')
+        print('あなたの持ち点：', your_point, '点')
+        print('CPUの持ち点：', cpu_point, '点\n')
+
+
+#最終結果の出力
+print('\n-----最終結果-----')
+if cpu_point <= 0: print('CPUの持ち点が0点以下になりました、あなたの勝ちです！')
+else: print('あなたの持ち点が0点以下になりました、CPUの勝ちです！')
