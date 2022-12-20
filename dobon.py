@@ -131,7 +131,7 @@ while your_point > 0 and cpu_point > 0:
         if table[-1][1:] == str(card_sum):
 
             #プレイヤー側
-            if turn == 0:
+            if turn == 0 and can_dobon == 'you':
                 print('ドボンできます！ドボンしますか？')
                 print('「Yes」または「No」を入力してください ')
                 you_ans = input()
@@ -142,7 +142,7 @@ while your_point > 0 and cpu_point > 0:
                     break
             
             #CPU側
-            else:
+            elif turn == 1 and can_dobon == 'cpu':
                 win_player = 'CPU'
                 dobon_num = card_sum
                 break
