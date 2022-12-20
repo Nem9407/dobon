@@ -81,7 +81,6 @@ def pass_or_play(player, draw_deck):
     if turn == 0:
         print('場のカード：', table[-1])
         print('あなたの手札：', player)
-        print('CPUの手札：', computer)
         print('カードを場に出すかパスしてください')
         print('カードを出す場合「マークと数字　例：♠1」、パスをする場合「pass」と入力してください')
         action = input()
@@ -181,22 +180,25 @@ while your_point > 0 and cpu_point > 0:
                     print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
                     action = input()
                     print('---------------------')
+
+                    #さらにドローする場合
                     if action == 'draw': pass_or_play(you, deck)
+
+                    #カードを出す場合
                     else: 
                         #ここに出せるカードかを判定する処理を記述する
                         to_play(you, action)
-                        can_dobon = 'cpu'
 
 
                 #カードを出す場合
                 else:
                     #ここに1,8,10だけを通す処理を記述する
                     to_play(you, action)
-                    can_dobon = 'cpu'
             
 
             #場のカードが11
             elif table[-1][1:] == '11':
+                #1ターン目の場合
                 if eleven_choice == 'free':
                     print('好きなカードを出すか、カードを1枚引いてください')
                     print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
@@ -208,6 +210,8 @@ while your_point > 0 and cpu_point > 0:
 
                     #カードを出す場合
                     else: to_play(you, action)
+                    
+                #2ターン目以降の場合
                 else:
                     print('場にあるカードは11です。マークが', eleven_choice, 'のカードを出すか、カードを1枚引いてください')
                     print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
