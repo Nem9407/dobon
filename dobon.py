@@ -107,7 +107,7 @@ def can_dobon_check(player):
 
             if you_ans == 'Yes': return True
             else: return False
-
+        #CPU側
         elif can_dobon == 'cpu': return True
         else: return False
 
@@ -121,7 +121,6 @@ while your_point > 0 and cpu_point > 0:
     turn_count = 0
     draw_count = 0
     game_rate = 1
-    blind_bonus = ''
     eleven_choice = 'free'
     win_player = ''
     can_dobon = 'free'
@@ -144,9 +143,11 @@ while your_point > 0 and cpu_point > 0:
         #ドボンできるかどうかを判断
         if turn == 0 and can_dobon_check(you):
             win_player = 'you'
+            if turn_count == 0: tenho = True
             break
-        elif turn == 1 and can_dobon_check(computer):
+        elif (turn == 1 or turn_count == 0) and can_dobon_check(computer):
             win_player = 'cpu'
+            if turn_count == 0: tenho = True
             break
         
         #プレイヤー側の処理
@@ -402,8 +403,15 @@ while your_point > 0 and cpu_point > 0:
 
     #プレイヤーがドボンした場合
     if win_player == 'you':
+        #天保の場合
+        if tenho == True:
+            print('あなたの勝ちです！')
+            print('天保なので、点数は10点です！')
+            your_point += 10
+            cpu_point -= 10
+
         #ドボン返しされない場合
-        if not hand_match: 
+        elif not hand_match: 
             print('あなたの勝ちです！')
 
             #引きドボンの確認
@@ -416,6 +424,7 @@ while your_point > 0 and cpu_point > 0:
                 print('裏ドラが乗りました！点数が2倍になります！')
                 game_rate *= 2
 
+            #点数の出力
             print('点数は', hand[0]*game_rate, '点です！')
             your_point += hand[0]*game_rate
             cpu_point -= hand[0]*game_rate
@@ -435,14 +444,22 @@ while your_point > 0 and cpu_point > 0:
                 print('裏ドラが乗りました！点数がさらに2倍になります！')
                 game_rate *= 2
 
+            #点数の出力
             print('点数は', hand[1]*game_rate, '点です！')
             your_point -= hand[1]*game_rate
             cpu_point += hand[1]*game_rate
 
     #CPUがドボンした場合
     elif win_player == 'cpu':
+        #天保の場合
+        if tenho == True:
+            print('CPUの勝ちです！')
+            print('天保なので、点数は10点です！')
+            your_point -= 10
+            cpu_point += 10
+
         #ドボン返しできない場合 
-        if not hand_match: 
+        elif not hand_match: 
             print('CPUがドボンしました、CPUの勝ちです！')
 
             #引きドボンの確認
@@ -455,6 +472,7 @@ while your_point > 0 and cpu_point > 0:
                 print('裏ドラが乗りました！点数が2倍になります！')
                 game_rate *= 2
 
+            #点数の出力
             print('点数は', hand[1]*game_rate, '点です！')
             your_point -= hand[1]*game_rate
             cpu_point += hand[1]*game_rate
@@ -474,9 +492,12 @@ while your_point > 0 and cpu_point > 0:
                 print('裏ドラが乗りました！点数がさらに2倍になります！')
                 game_rate *= 2
                 
+            #点数の出力
             print('点数は', hand[0]*game_rate, '点です！')
             your_point += hand[0]*game_rate
             cpu_point -= hand[0]*game_rate
+
+    #山札が無くなった場合(未実装)
     else: print('山札が無くなってしまいました')
 
     #1ゲームが終了
