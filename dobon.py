@@ -82,7 +82,8 @@ def pass_or_play(player, draw_deck):
         print('カードを出す場合「マークと数字　例：♠1」、パスをする場合「pass」と入力してください')
         action = input()
         print('---------------------')
-        if action in player: to_play(player, action)
+        if action in player: 
+            to_play(player, action)
         elif action == 'pass': print('パスしました')
     else:
         card = player[-1]
@@ -109,8 +110,7 @@ def can_dobon_check(player):
             else: return False
         #CPU側
         elif can_dobon == 'cpu': return True
-        else: return False
-
+    else: return False
 
 
 #ドボンの実装
@@ -139,6 +139,36 @@ while your_point > 0 and cpu_point > 0:
     #1ゲーム分の処理
     while True:
         turn = turn_count % 2
+
+        #手札の入れ替え判定
+        if turn_count == 0:
+            #プレイヤー側の処理
+            change_check = True
+            for card in you:
+                if not card[1:] in ['11', '12', '13']: change_check = False
+            if change_check:
+                print(you)
+                print('手札が全て11以上です。手札を入れ替えることができます')
+                print('手札を入れ替えますか？入れ替える場合「Yes」、入れ替えない場合「No」と入力してください')
+                ans = input()
+                if ans == 'Yes':
+                    deck.extend(you)
+                    random.shuffle(deck)
+                    you = draw(deck, 3)
+                    print('手札を入れ替えました')
+                    print('あなたの手札：', you)
+                print('---------------------')
+            
+            #CPU側の処理
+            change_check = True
+            for card in computer:
+                if not card[1:] in ['11', '12', '13']: change_check = False
+            if change_check:
+                deck.extend(computer)
+                random.shuffle(deck)
+                computer = draw(deck, 3)
+                print('CPUが手札を入れ替えました')
+                print('---------------------')                    
 
         #ドボンできるかどうかを判断
         if turn == 0 and can_dobon_check(you):
@@ -194,7 +224,7 @@ while your_point > 0 and cpu_point > 0:
                     #さらにドローする場合
                     if action == 'draw':
                         you.extend(draw(deck, 1))
-                        print('カードを1枚ドローしました')
+                        print('カードを 1 枚ドローしました')
                         print('---------------------')
 
                         #ドボンできるかどうかを判定
@@ -214,6 +244,7 @@ while your_point > 0 and cpu_point > 0:
                 else:
                     #ここに1,8,10だけを通す処理を記述する
                     to_play(you, action)
+                    can_dobon = 'cpu'
             
 
             #場のカードが11
@@ -228,7 +259,7 @@ while your_point > 0 and cpu_point > 0:
                     #ドローする場合
                     if action == 'draw': 
                         you.extend(draw(deck, 1))
-                        print('カードを1枚ドローしました')
+                        print('カードを 1 枚ドローしました')
                         print('---------------------')
 
                         #ドボンできるかどうかを判定
@@ -239,7 +270,8 @@ while your_point > 0 and cpu_point > 0:
                         else: pass_or_play(you, deck)
 
                     #カードを出す場合
-                    else: to_play(you, action)
+                    else: 
+                        to_play(you, action)
                     
                 #2ターン目以降の場合
                 else:
@@ -251,7 +283,7 @@ while your_point > 0 and cpu_point > 0:
                     #ドローする場合
                     if action == 'draw': 
                         you.extend(draw(deck, 1))
-                        print('カードを1枚ドローしました')
+                        print('カードを 1 枚ドローしました')
                         print('---------------------')
 
                         #ドボンできるかどうかを判定
@@ -277,7 +309,7 @@ while your_point > 0 and cpu_point > 0:
                 #ドローする場合
                 if action == 'draw': 
                     you.extend(draw(deck, 1))
-                    print('カードを1枚ドローしました')
+                    print('カードを 1 枚ドローしました')
                     print('---------------------')
 
                     #ドボンできるかどうかを判定
@@ -328,9 +360,10 @@ while your_point > 0 and cpu_point > 0:
                             to_play(computer, card)
                             draw_check = False
                             break
+
                     if draw_check:
                         computer.extend(draw(deck, 1))
-                        print('カードを1枚ドローしました')
+                        print('カードを 1 枚ドローしました')
                         print('---------------------')
 
                         #ドボンできるかどうかを判定
@@ -353,7 +386,7 @@ while your_point > 0 and cpu_point > 0:
                 #カードを出していない場合にドローする
                 if draw_check: 
                     computer.extend(draw(deck, 1))
-                    print('カードを1枚ドローしました')
+                    print('カードを 1 枚ドローしました')
                     print('---------------------')
 
                     #ドボンできるかどうかを判定
@@ -375,7 +408,7 @@ while your_point > 0 and cpu_point > 0:
                 #カードを出していない場合にドローする
                 if draw_check: 
                     computer.extend(draw(deck, 1))
-                    print('カードを1枚ドローしました')
+                    print('カードを 1 枚ドローしました')
                     print('---------------------')
 
                     #ドボンできるかどうかを判定
