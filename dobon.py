@@ -86,9 +86,23 @@ def pass_or_play(player, draw_deck):
         print('カードを出す場合「マークと数字　例：♠1」、パスをする場合「pass」と入力してください')
         action = input()
         print('---------------------')
-        if action in player: 
-            to_play(player, action)
-        elif action == 'pass': print('パスしました')
+        while True:
+            #カードを出す場合
+            if action in you and (action[1:] == table[-1][1:] or action[0] == table[-1][0] or action[1:] in ['1', '8', '10', '11']): 
+                to_play(player, action)
+                break
+
+            #パスをする場合
+            elif action == 'pass': 
+                print('パスしました')
+                break
+            
+            #入力が正しくない場合
+            else:
+                print('入力が正しくありません。もう一度入力してください。')
+                print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
+                action = input()
+
     else:
         card = player[-1]
         #カードを出す
@@ -103,7 +117,7 @@ def can_dobon_check(player):
     for card in player: card_sum += int(card[1:])
     if table[-1][1:] == str(card_sum):
         #プレイヤー側
-        if can_dobon == 'you':
+        if can_dobon == 'you' and turn == 0:
             print('あなたの手札：', you)
             print('ドボンできます！ドボンしますか？')
             print('「Yes」または「No」を入力してください ')
@@ -113,7 +127,7 @@ def can_dobon_check(player):
             if you_ans == 'Yes': return True
             else: return False
         #CPU側
-        elif can_dobon == 'cpu': return True
+        elif can_dobon == 'cpu' and turn == 1: return True
     else: return False
 
 #カードを出すことができるかを判定
@@ -273,10 +287,6 @@ while your_point > 0 and cpu_point > 0:
                         print('入力が正しくありません。もう一度入力してください。')
                         print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
                         action = input()
-                
-                #ドボンできる場合、ゲームを終了
-                if win_player == 'you': break
-
             
 
             #場のカードが11
@@ -288,20 +298,29 @@ while your_point > 0 and cpu_point > 0:
                     action = input()
                     print('---------------------')
 
-                    #ドローする場合
-                    if action == 'draw': 
-                        you.extend(draw(deck, 1))
+                    while True:
+                        #ドローする場合
+                        if action == 'draw': 
+                            you.extend(draw(deck, 1))
 
-                        #ドボンできるかどうかを判定
-                        if can_dobon_check(you):
-                            win_player = 'you'
-                            drawed_dobon = True
-                            break   
-                        else: pass_or_play(you, deck)
+                            #ドボンできるかどうかを判定
+                            if can_dobon_check(you):
+                                win_player = 'you'
+                                drawed_dobon = True   
+                            else: pass_or_play(you, deck)
+                            break
 
-                    #カードを出す場合
-                    else: 
-                        to_play(you, action)
+                        #カードを出す場合
+                        elif action in you: 
+                            to_play(you, action)
+                            break
+                        
+                        #入力が正しくない場合
+                        else:
+                            print('入力が正しくありません。もう一度入力してください。')
+                            print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
+                            action = input()
+
                     
                 #2ターン目以降の場合
                 else:
@@ -310,21 +329,28 @@ while your_point > 0 and cpu_point > 0:
                     action = input()
                     print('---------------------')
                     
-                    #ドローする場合
-                    if action == 'draw': 
-                        you.extend(draw(deck, 1))
+                    while True:
+                        #ドローする場合
+                        if action == 'draw': 
+                            you.extend(draw(deck, 1))
 
-                        #ドボンできるかどうかを判定
-                        if can_dobon_check(you):
-                            win_player = 'you'
-                            drawed_dobon = True
-                            break   
-                        else: pass_or_play(you, deck)
+                            #ドボンできるかどうかを判定
+                            if can_dobon_check(you):
+                                win_player = 'you'
+                                drawed_dobon = True   
+                            else: pass_or_play(you, deck)
+                            break
 
-                    #カードを出す場合
-                    else: 
-                        #ここに指定のマークだけを通す処理を記述する
-                        to_play(you, action)
+                        #カードを出す場合
+                        elif action in you and (action[0] == eleven_choice or action[1:] in ['1', '8', '10', '11']): 
+                            to_play(you, action)
+                            break
+
+                        #入力が正しくない場合
+                        else:
+                            print('入力が正しくありません。もう一度入力してください。')
+                            print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
+                            action = input()
             
 
             #場のカードがそれ以外
@@ -334,21 +360,31 @@ while your_point > 0 and cpu_point > 0:
                 action = input()
                 print('---------------------')
 
-                #ドローする場合
-                if action == 'draw': 
-                    you.extend(draw(deck, 1))
+                while True:
+                    #ドローする場合
+                    if action == 'draw': 
+                        you.extend(draw(deck, 1))
 
-                    #ドボンできるかどうかを判定
-                    if can_dobon_check(you):
-                        win_player = 'you'
-                        drawed_dobon = True
-                        break   
-                    else: pass_or_play(you, deck)
+                        #ドボンできるかどうかを判定
+                        if can_dobon_check(you):
+                            win_player = 'you'
+                            drawed_dobon = True
+                        else: pass_or_play(you, deck)
+                        break
 
-                #カードを出す場合
-                else:
-                    #ここにカードを出せるかどうかの判定を記述
-                    to_play(you, action)
+                    #カードを出す場合
+                    elif action in you and (action[1:] == table[-1][1:] or action[0] == table[-1][0] or action[1:] in ['1', '8', '10', '11']):
+                        to_play(you, action)
+                        break
+                    
+                    #入力が正しくない場合
+                    else:
+                        print('入力が正しくありません。もう一度入力してください。')
+                        print('カードを出す場合「マークと数字　例：♠1」、ドローする場合「draw」と入力してください')
+                        action = input()
+
+            #ドボンできる場合、ゲームを終了
+            if win_player == 'you': break
 
 
         #CPU側の処理
