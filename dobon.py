@@ -18,6 +18,7 @@ win_player = ''
 can_dobon = 'free'
 drawed_dobon = False
 tenho = False
+penalty = False
 
 #山札をシャッフル
 random.shuffle(deck)
@@ -60,6 +61,7 @@ def to_play(player, card_to_play):
     global can_dobon
     global eleven_choice
     global table
+    global game_rate
 
     #カードを出す
     table.append(card_to_play)
@@ -98,6 +100,7 @@ def pass_or_play(player, draw_deck):
     global can_dobon
     global eleven_choice
     global table
+    global game_rate
 
     #プレイヤ―側
     if turn == 0:
@@ -394,6 +397,13 @@ while your_point > 0 and cpu_point > 0:
             #ドボンできる場合、ゲームを終了
             if win_player == 'you': break
 
+            #手札が8枚以上の場合、ゲームを終了
+            if len(you) >= 8:
+                penalty = True
+                win_player = 'cpu'
+                break       
+
+
 
         #CPU側の処理
         else:
@@ -480,6 +490,12 @@ while your_point > 0 and cpu_point > 0:
                         drawed_dobon = True
                         break   
                     else: pass_or_play(computer, deck)
+            
+            #手札が8枚以上の場合、ゲームを終了
+            if len(computer) >= 8:
+                penalty = True
+                win_player = 'you'
+                break  
         
         #ターン数を増やす
         turn_count += 1
@@ -497,8 +513,21 @@ while your_point > 0 and cpu_point > 0:
 
     #結果の出力
 
+    #手札が8枚以上の場合
+    if penalty:
+        if win_player == 'you':
+            print('CPUの手札が8枚以上になりました、あなたの勝ちです！')
+            print('点数は15点です！')
+            your_point += 15
+            cpu_point -= 15
+        elif win_player == 'cpu':
+            print('あなたの手札が8枚以上になりました、CPUの勝ちです！')
+            print('点数は15点です！')
+            your_point -= 15
+            cpu_point += 15
+
     #プレイヤーがドボンした場合
-    if win_player == 'you':
+    elif win_player == 'you':
         #天保の場合
         if tenho == True:
             print('あなたの勝ちです！')
@@ -593,8 +622,6 @@ while your_point > 0 and cpu_point > 0:
             your_point += hand[0]*game_rate
             cpu_point -= hand[0]*game_rate
 
-    #山札が無くなった場合(未実装)
-    else: print('山札が無くなってしまいました')
 
     #1ゲームが終了
     game_count += 1
