@@ -27,9 +27,24 @@ random.shuffle(deck)
 #num:ドローする枚数
 #dialogue:ドローしたことを出力するかどうか
 def draw(draw_deck, num=0, dialogue=True):
+    global game_rate
+    global table
+
+    #山札が無くなった場合
+    if num > len(draw_deck):
+        draw_deck.extend(table[:-1])
+        random.shuffle(draw_deck)
+        table = [table[-1]]
+        game_rate *= 2
+        print('山札が無くなりました、レートが二倍になります')
+        print('---------------------') 
+
+    #ドローしたことの出力
     if dialogue:
         print('カードを', num, '枚ドローしました')
         print('---------------------')  
+    
+    #num枚だけドローする
     cards = []
     for i in range(num):
         draw_card = draw_deck[0]
@@ -46,12 +61,16 @@ def to_play(player, card_to_play):
     global eleven_choice
     global table
 
+    #カードを出す
     table.append(card_to_play)
     player.remove(card_to_play)
     print(card_to_play, 'を出しました')
+
+    #ドボンできるかどうかを判定
     if turn == 0: can_dobon = 'cpu'
     else: can_dobon = 'you'
 
+    #役札の場合
     if card_to_play[1:] == '11':
         if turn == 0:
             print('マークを指定してください　例：♠')
@@ -64,6 +83,7 @@ def to_play(player, card_to_play):
     elif card_to_play[1:] in ['1', '8', '10']: 
         draw_count += 1
 
+    #手札が無くなった場合
     if len(player) == 0: 
         draw_cards = draw(deck, 1)
         player.extend(draw_cards)
@@ -79,6 +99,7 @@ def pass_or_play(player, draw_deck):
     global eleven_choice
     global table
 
+    #プレイヤ―側
     if turn == 0:
         print('場のカード：', table[-1])
         print('あなたの手札：', player)
@@ -126,23 +147,10 @@ def can_dobon_check(player):
 
             if you_ans == 'Yes': return True
             else: return False
+
         #CPU側
         elif can_dobon == 'cpu' and turn == 1: return True
     else: return False
-
-#カードを出すことができるかを判定
-'''def play_check(action, player):
-    if 
-
-    while True:
-        #入力したカードが手札にあるかどうか、出せるカードかを判定
-        if action in you and :
-            to_play(you, action)
-            break
-        else:
-            print('入力が正しくありません。もう一度入力してください。')
-            print('カードを出す場合「マークと数字　例：♠1」を入力してください')
-            action = input()'''
 
 
 #ドボンの実装
