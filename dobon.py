@@ -141,7 +141,7 @@ def can_dobon_check(player):
     for card in player: card_sum += int(card[1:])
     if table[-1][1:] == str(card_sum):
         #プレイヤー側
-        if can_dobon == 'you' and turn == 0:
+        if (can_dobon == 'you' or can_dobon == 'free') and turn == 0:
             print('あなたの手札：', you)
             print('ドボンできます！ドボンしますか？')
             print('「Yes」または「No」を入力してください ')
@@ -152,7 +152,7 @@ def can_dobon_check(player):
             else: return False
 
         #CPU側
-        elif can_dobon == 'cpu' and turn == 1: return True
+        elif (can_dobon == 'cpu' or can_dobon == 'free') and turn == 1: return True
     else: return False
 
 
