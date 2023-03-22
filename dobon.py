@@ -112,7 +112,7 @@ def pass_or_play(player, draw_deck):
         print('---------------------')
         while True:
             #カードを出す場合
-            if action in you and (action[1:] == table[-1][1:] or action[0] == table[-1][0] or action[1:] in ['1', '8', '10', '11']): 
+            if action in you and ((table[-1][1:] == '11' and action[0] == eleven_choice) or (not table[-1][1:] == '11' and (action[1:] == table[-1][1:] or action[0] == table[-1][0])) or (eleven_choice == 'free') or action[1:] in ['1', '8', '10', '11']): 
                 to_play(player, action)
                 break
 
