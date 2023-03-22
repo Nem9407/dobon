@@ -3,6 +3,7 @@ import random
 #ジョーカー以外の54枚で山札を構築
 card_mark = ['♠', '♣', '♥', '♦']
 deck = [mark + str(num) for num in range(1,14) for mark in card_mark]
+for i in range(2): deck.append('joker')
 
 #変数の定義
 game_count = 1
@@ -30,6 +31,8 @@ random.shuffle(deck)
 def draw(draw_deck, num=0, dialogue=True):
     global game_rate
     global table
+    dia_tmp = True
+    if turn_count == 0: dia_tmp = False
 
     #山札が無くなった場合
     if num > len(draw_deck):
@@ -51,6 +54,17 @@ def draw(draw_deck, num=0, dialogue=True):
         draw_card = draw_deck[0]
         cards.append(draw_card)
         draw_deck.remove(draw_card)
+    
+    if 'joker' in cards:
+        if not turn_count == 0: print('ドローしたカードにJOKERが含まれていました')
+        cards.extend(draw(draw_deck, 2, dia_tmp))
+        cards.remove('joker')
+        table.insert(0, 'joker')
+        if 'joker' in cards:
+            if not turn_count == 0: print('もう一枚ドローしたカードにJOKERが含まれていました')
+            cards.extend(draw(draw_deck, 2, dia_tmp))
+            cards.remove('joker')
+            table.insert(0, 'joker')
     return cards
 
 #player が card_to_play を場に出す関数
@@ -164,6 +178,7 @@ while True:
     while your_point > 0 and cpu_point > 0:
         #変数の初期化
         deck = [mark + str(num) for num in range(1,14) for mark in card_mark]
+        for i in range(2): deck.append('joker')
         random.shuffle(deck)
         turn_count = 0
         draw_count = 0
@@ -174,14 +189,14 @@ while True:
         drawed_dobon = False
         tenho = False
 
+        print('～～～', game_count, 'ゲーム目～～～')
+
         #プレイヤー、コンピューター、場、裏ドラにカードを配る
+        table = draw(deck, 1, False)
         you = draw(deck, 3, False)
         computer = draw(deck, 3, False)
-        table = draw(deck, 1, False)
         blind_bonus = draw(deck, 1, False)
         players = [you, computer]
-
-        print('～～～', game_count, 'ゲーム目～～～')
 
         #1ゲーム分の処理
         while True:
